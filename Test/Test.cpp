@@ -1,5 +1,4 @@
-﻿#include<iostream>
-#include <windows.h>
+﻿#include <windows.h>
 #include <gdiplus.h>
 #include<windowsx.h>
 #include<string>
@@ -11,6 +10,7 @@ const int PanelWidth = 15; //棋盘宽度
 int WindowWidth = 768; //窗口大小
 int SideWidth = 30; //棋盘边框与窗体距离
 bool ShowNum = false; //是否在棋子上显示步数
+bool ShowTag = true; //是否在棋盘上显示坐标标记
 int xPos, yPos;
 bool ChessColor = false;
 int ChessSize = 35;
@@ -65,7 +65,22 @@ VOID OnPaint(HDC hdc)
 
         graphics.DrawLine(&pen, SideWidth, Point, WindowWidth - SideWidth - 3, Point);
 
-        std::cout << Point << std::endl;
+
+        //画坐标轴标记
+        if (ShowTag)
+        {
+            if (i+1 > PanelWidth) continue;
+            WCHAR  t[4];
+            FontFamily  fontFamily(L"Consolas");
+            Font font(&fontFamily, 24, FontStyleRegular, UnitPixel);
+            wsprintfW(t, L"%d", i+1);
+            PointF pointF(Point+ (i<10?13:5), 3);
+            SolidBrush brush(Color(255,0,0,255));
+            graphics.DrawString(t, -1, &font, pointF, &brush);
+            PointF pointF1(3,Point + 13);
+            t[0] = 'A' + i; t[1] = 0;
+            graphics.DrawString(t, -1, &font, pointF1, &brush);
+        }
     }
     //画棋子
 
@@ -86,7 +101,7 @@ VOID OnPaint(HDC hdc)
             WCHAR  t[4];
             FontFamily  fontFamily(L"Times New Roman");
             Font font(&fontFamily, 24, FontStyleRegular, UnitPixel);
-            wsprintfW(t, L"%d", i);
+            wsprintfW(t, L"%d", i+1);
             PointF pointF(xP + (i < 10 ? 7 : 2), yP + 3);
             if (steps[i].Team)c = Color(255, 0, 0, 0);
             else c = Color(255, 255, 255, 255);
