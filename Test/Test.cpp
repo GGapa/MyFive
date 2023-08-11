@@ -18,7 +18,6 @@ bool ChessColor = false;
 int ChessSize = 35;
 byte Data[100][100] = { 0 };
 
-
 std::vector<step> steps;
 
 bool RecChess(int x, int y)
