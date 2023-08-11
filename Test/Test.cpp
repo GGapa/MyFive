@@ -9,7 +9,7 @@ using namespace Gdiplus;
 #pragma comment (lib,"Gdiplus.lib")
 
 int PanelSize = 15; //棋盘宽度
-int WindowWidth = 768; //窗口大小
+int WindowWidth =768; //窗口大小
 int SideWidth = 30; //棋盘边框与窗体距离
 bool ShowNum = true; //是否在棋子上显示步数
 bool ShowTag = true; //是否在棋盘上显示坐标标记
@@ -149,6 +149,7 @@ VOID init()
     PanelSize = ReadINI("PanelSize", 15);
     ShowNum= ReadINI("ShowNum", 1);
     ShowTag= ReadINI("ShowTag", 1);
+    WindowWidth = ReadINI("WindowWidth", 768);
 }
 
 
