@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\Data\MyFive\x64\Debug\Test.exe</FullPath>
+      <FullPath>C:\cpp\MyFive\x64\Debug\Test.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

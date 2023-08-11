@@ -5,6 +5,7 @@
 #include<vector>
 #include "Config.h"
 #include "Test.h"
+#include "IsWin.h"
 using namespace Gdiplus;
 #pragma comment (lib,"Gdiplus.lib")
 
@@ -20,7 +21,7 @@ byte Data[100][100] = { 0 };
 
 std::vector<step> steps;
 
-bool RecChess(int x, int y)
+bool RecChess(int x, int y ,HWND hWnd)
 {
     //得到在当前窗体大小下，每个格子的宽度，这个宽度是动态的
     int Scale = (WindowWidth - SideWidth - SideWidth) / PanelSize;
@@ -33,12 +34,17 @@ bool RecChess(int x, int y)
             Data[xP][yP] = 1;
         else
             Data[xP][yP] = 2;
-
         step t;
         t.x = xP;
         t.y = yP;
         t.Team = ChessColor;
         steps.push_back(t);
+        if (IsWin(Data, xP, yP))
+        {
+            InvalidateRect(hWnd, NULL, false);
+            MessageBox(NULL, (ChessColor == 1 ? L"白棋胜利" : L"黑棋胜利"), L"胜利提示", 0);
+            //exit(0);
+        }
         ChessColor = !ChessColor;
         return true;
     }
@@ -155,14 +161,15 @@ VOID init()
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
-INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, INT iCmdShow)
+
+INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, INT iCmdShow)//不用管，Main
 {
     HWND                hWnd;
     MSG                 msg;
     WNDCLASS            wndClass;
     GdiplusStartupInput gdiplusStartupInput;
     ULONG_PTR           gdiplusToken;
-
+    
     init();
 
     // Initialize GDI+.
@@ -227,7 +234,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message,
     case WM_LBUTTONDOWN:
         xPos = GET_X_LPARAM(lParam);
         yPos = GET_Y_LPARAM(lParam);
-        if (RecChess(xPos, yPos))
+        if (RecChess(xPos, yPos, hWnd))
         {
             InvalidateRect(hWnd, NULL, false);
             //UpdateWindow(hWnd);

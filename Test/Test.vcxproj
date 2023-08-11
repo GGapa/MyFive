@@ -129,12 +129,14 @@
   <ItemGroup>
     <ClInclude Include="Config.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="IsWin.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Test.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Config.cpp" />
+    <ClCompile Include="IsWin.cpp" />
     <ClCompile Include="Test.cpp" />
   </ItemGroup>
   <ItemGroup>

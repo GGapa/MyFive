@@ -1,7 +1,7 @@
 ﻿  Test.cpp
-C:\Data\MyFive\Test\Test.cpp(83,33): warning C4244: “参数”: 从“int”转换到“Gdiplus::REAL”，可能丢失数据
-C:\Data\MyFive\Test\Test.cpp(86,37): warning C4244: “参数”: 从“int”转换到“Gdiplus::REAL”，可能丢失数据
-C:\Data\MyFive\Test\Test.cpp(111,52): warning C4244: “参数”: 从“int”转换到“Gdiplus::REAL”，可能丢失数据
-C:\Data\MyFive\Test\Test.cpp(111,30): warning C4244: “参数”: 从“int”转换到“Gdiplus::REAL”，可能丢失数据
-C:\Data\MyFive\Test\Test.cpp(208,15): warning C4244: “return”: 从“WPARAM”转换到“int”，可能丢失数据
-  Test.vcxproj -> C:\Data\MyFive\x64\Debug\Test.exe
+C:\cpp\MyFive\Test\Test.cpp(89,33): warning C4244: 'argument': conversion from 'int' to 'Gdiplus::REAL', possible loss of data
+C:\cpp\MyFive\Test\Test.cpp(92,37): warning C4244: 'argument': conversion from 'int' to 'Gdiplus::REAL', possible loss of data
+C:\cpp\MyFive\Test\Test.cpp(117,52): warning C4244: 'argument': conversion from 'int' to 'Gdiplus::REAL', possible loss of data
+C:\cpp\MyFive\Test\Test.cpp(117,30): warning C4244: 'argument': conversion from 'int' to 'Gdiplus::REAL', possible loss of data
+C:\cpp\MyFive\Test\Test.cpp(215,15): warning C4244: 'return': conversion from 'WPARAM' to 'int', possible loss of data
+  Test.vcxproj -> C:\cpp\MyFive\x64\Debug\Test.exe
