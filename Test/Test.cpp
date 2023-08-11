@@ -4,23 +4,19 @@
 #include<string>
 #include<vector>
 #include "Config.h"
+#include "Test.h"
 using namespace Gdiplus;
 #pragma comment (lib,"Gdiplus.lib")
-const int PanelWidth = 15; //棋盘宽度
+
+int PanelSize = 15; //棋盘宽度
 int WindowWidth = 768; //窗口大小
 int SideWidth = 30; //棋盘边框与窗体距离
-bool ShowNum = false; //是否在棋子上显示步数
+bool ShowNum = true; //是否在棋子上显示步数
 bool ShowTag = true; //是否在棋盘上显示坐标标记
 int xPos, yPos;
 bool ChessColor = false;
 int ChessSize = 35;
-int Data[PanelWidth][PanelWidth] = { 0 };
-
-struct step
-{
-    int x, y;
-    bool Team;
-};
+byte Data[100][100] = { 0 };
 
 
 std::vector<step> steps;
@@ -28,7 +24,7 @@ std::vector<step> steps;
 bool RecChess(int x, int y)
 {
     //得到在当前窗体大小下，每个格子的宽度，这个宽度是动态的
-    int Scale = (WindowWidth - SideWidth - SideWidth) / PanelWidth;
+    int Scale = (WindowWidth - SideWidth - SideWidth) / PanelSize;
     ChessSize = Scale - 12;
     int xP = ((x - SideWidth) / Scale);
     int yP = ((y - SideWidth) / Scale);
@@ -50,15 +46,26 @@ bool RecChess(int x, int y)
     return false;
 }
 
-VOID OnPaint(HDC hdc)
+VOID OnPaint(HDC hdc, HWND hWnd)
 {
-    Graphics graphics(hdc);
-    graphics.SetSmoothingMode(Gdiplus::SmoothingModeHighQuality);
-    Pen      pen(Color(255, 0, 0, 255));
+    //Graphics graphics(hdc);
+    //双缓冲
+    HBITMAP hBackbuffer = CreateCompatibleBitmap(hdc, WindowWidth, WindowWidth);
+    HDC hBackbufferDC = CreateCompatibleDC(hdc);
+    SelectObject(hBackbufferDC, hBackbuffer);
 
-    int Scale = (WindowWidth - SideWidth - SideWidth) / PanelWidth;
+
+    //Bitmap bmp(WindowWidth + 30, WindowWidth + 30);
+    //Graphics *graphics = Graphics::FromImage(&bmp);
+
+    Graphics graphics(hBackbufferDC);
+    graphics.Clear(Color::White);
+    graphics.SetSmoothingMode(Gdiplus::SmoothingModeHighQuality);
+    Pen pen(Color(255, 0, 0, 255));
+
+    int Scale = (WindowWidth - SideWidth - SideWidth) / PanelSize;
     //画棋盘。。
-    for (int i = 0; i <= PanelWidth; i++)
+    for (int i = 0; i <= PanelSize; i++)
     {
         int Point = SideWidth + Scale * i;
         graphics.DrawLine(&pen, Point, SideWidth, Point, WindowWidth - SideWidth - 3);//-3是为了消除小数误差
@@ -69,15 +76,15 @@ VOID OnPaint(HDC hdc)
         //画坐标轴标记
         if (ShowTag)
         {
-            if (i+1 > PanelWidth) continue;
+            if (i + 1 > PanelSize) continue;
             WCHAR  t[4];
             FontFamily  fontFamily(L"Consolas");
             Font font(&fontFamily, 24, FontStyleRegular, UnitPixel);
-            wsprintfW(t, L"%d", i+1);
-            PointF pointF(Point+ (i<10?13:5), 3);
-            SolidBrush brush(Color(255,0,0,255));
+            wsprintfW(t, L"%d", i + 1);
+            PointF pointF(Point + (i < 9 ? 13 : 5), 3);
+            SolidBrush brush(Color(255, 0, 0, 255));
             graphics.DrawString(t, -1, &font, pointF, &brush);
-            PointF pointF1(3,Point + 13);
+            PointF pointF1(3, Point + 13);
             t[0] = 'A' + i; t[1] = 0;
             graphics.DrawString(t, -1, &font, pointF1, &brush);
         }
@@ -99,10 +106,10 @@ VOID OnPaint(HDC hdc)
         if (ShowNum)
         {
             WCHAR  t[4];
-            FontFamily  fontFamily(L"Times New Roman");
+            FontFamily  fontFamily(L"Consolas");
             Font font(&fontFamily, 24, FontStyleRegular, UnitPixel);
-            wsprintfW(t, L"%d", i+1);
-            PointF pointF(xP + (i < 10 ? 7 : 2), yP + 3);
+            wsprintfW(t, L"%d", i + 1);
+            PointF pointF(xP + (i < 9 ? 7 : 2), yP + 3);
             if (steps[i].Team)c = Color(255, 0, 0, 0);
             else c = Color(255, 255, 255, 255);
             SolidBrush brush1(c);
@@ -126,10 +133,24 @@ VOID OnPaint(HDC hdc)
 
         }
         */
-        //delete& graphics;
 
+        //Graphics g01(hdc);
+        //g01.DrawImage(&bmp, 0, 0, WindowWidth + 30, WindowWidth + 30);
+
+    BitBlt(hdc, 0, 0, WindowWidth, WindowWidth,
+        hBackbufferDC, 0, 0,
+        SRCCOPY);
+    ReleaseDC(hWnd, hdc);
+    DeleteDC(hBackbufferDC);
+    DeleteObject(hBackbuffer);
 }
 
+VOID init()
+{
+    PanelSize = ReadINI("PanelSize", 15);
+    ShowNum= ReadINI("ShowNum", 1);
+    ShowTag= ReadINI("ShowTag", 1);
+}
 
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -141,6 +162,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, INT iCmdShow)
     WNDCLASS            wndClass;
     GdiplusStartupInput gdiplusStartupInput;
     ULONG_PTR           gdiplusToken;
+
+    init();
 
     // Initialize GDI+.
     GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
@@ -195,7 +218,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message,
     {
     case WM_PAINT:
         hdc = BeginPaint(hWnd, &ps);
-        OnPaint(hdc);
+        OnPaint(hdc, hWnd);
         EndPaint(hWnd, &ps);
         return 0;
     case WM_DESTROY:
@@ -206,13 +229,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message,
         yPos = GET_Y_LPARAM(lParam);
         if (RecChess(xPos, yPos))
         {
-            InvalidateRect(hWnd, NULL, TRUE);
-            UpdateWindow(hWnd);
+            InvalidateRect(hWnd, NULL, false);
+            //UpdateWindow(hWnd);
         }
-        SetWindowTextW(hWnd, L"asdasdas");
+        //SetWindowTextW(hWnd, L"asdasdas");
         //MessageBox(hWnd, (LPCWSTR)L"落子", (LPCWSTR)L"提示", 0);
         return 0;
-
+    case WM_ICONERASEBKGND:
+        return 0;
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
