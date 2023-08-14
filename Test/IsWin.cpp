@@ -33,10 +33,9 @@ int Check(byte ChessTable[100][100], int x, int y, int Addx, int Addy)
 
 bool IsWin(byte ChessTable[100][100], int x, int y)
 {
-    int PanelSize = ReadINI("PanelSize", 15);
-    return Check(ChessTable, x, y, 1, 0) == WinNumber ||
-           Check(ChessTable, x, y, 0, 1) == WinNumber ||
-           Check(ChessTable, x, y, 1, 1) == WinNumber ||
-           Check(ChessTable, x, y, -1, 1) == WinNumber;
+    return Check(ChessTable, x, y, 1, 0) >= WinNumber ||
+           Check(ChessTable, x, y, 0, 1) >= WinNumber ||
+           Check(ChessTable, x, y, 1, 1) >= WinNumber ||
+           Check(ChessTable, x, y, -1, 1) >= WinNumber;
     
 }

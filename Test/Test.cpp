@@ -3,13 +3,15 @@
 #include<windowsx.h>
 #include<string>
 #include<vector>
+
 #include "Config.h"
 #include "Test.h"
 #include "IsWin.h"
+#include "AI_Level_1.h"
 using namespace Gdiplus;
 #pragma comment (lib,"Gdiplus.lib")
 
-int PanelSize = 15; //棋盘宽度
+int GridSize = 15; //棋盘宽度
 int WindowWidth =768; //窗口大小
 int SideWidth = 30; //棋盘边框与窗体距离
 bool ShowNum = true; //是否在棋子上显示步数
@@ -18,16 +20,27 @@ int xPos, yPos;
 bool ChessColor = false;
 int ChessSize = 35;
 byte Data[100][100] = { 0 };
-
+bool IsOver = false; //棋局是否结束
+bool IsProc = false; //是否正在后台处理数据
+int black = 0, white = 0;
 std::vector<step> steps;
+HWND hWnd;
 
-bool RecChess(int x, int y ,HWND hWnd)
+void DoEvents()
 {
-    //得到在当前窗体大小下，每个格子的宽度，这个宽度是动态的
-    int Scale = (WindowWidth - SideWidth - SideWidth) / PanelSize;
-    ChessSize = Scale - 12;
-    int xP = ((x - SideWidth) / Scale);
-    int yP = ((y - SideWidth) / Scale);
+    MSG msg;
+    while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+    {
+        if (IsOver) return;
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+}
+
+bool PutChess(int x, int y)
+{
+    if (IsOver) return false;
+    int xP = x,yP = y;
     if (Data[xP][yP] == 0)
     {
         if (ChessColor)
@@ -43,6 +56,7 @@ bool RecChess(int x, int y ,HWND hWnd)
         {
             InvalidateRect(hWnd, NULL, false);
             MessageBox(NULL, (ChessColor == 1 ? L"白棋胜利" : L"黑棋胜利"), L"胜利提示", 0);
+            IsOver = true;
             //exit(0);
         }
         ChessColor = !ChessColor;
@@ -51,8 +65,69 @@ bool RecChess(int x, int y ,HWND hWnd)
     return false;
 }
 
+bool RecChess(int x, int y )
+{
+    //手工下棋
+    if (IsOver) return false;
+    int Scale = (WindowWidth - SideWidth - SideWidth) / GridSize;
+
+    int xP = ((x - SideWidth) / Scale);
+    int yP = ((y - SideWidth) / Scale);
+
+    return PutChess(xP, yP);
+}
+
+//决定下棋策略
+void ProcChess()
+{
+    if (!ChessColor && black == 0)return ;
+    if (ChessColor && white == 0)return ;
+    while (true)
+    {
+        if (IsOver) return;
+        InvalidateRect(hWnd, NULL, false);
+        UpdateWindow(hWnd);
+        DoEvents();
+        Sleep( 500);
+        DoEvents();
+
+        if (!ChessColor && black != 0)
+        {
+            step s;
+            if (black == 1) s = GetStepV1(Data, steps, GridSize, ChessColor);
+
+            PutChess(s.x, s.y);
+        }
+
+        InvalidateRect(hWnd, NULL, false);
+        UpdateWindow(hWnd);
+        DoEvents();
+        Sleep(1 * 500);
+        DoEvents();
+        if (ChessColor && white != 0)
+        {
+            step s;
+            if (white == 1) s = GetStepV1(Data, steps, GridSize, ChessColor);
+
+            PutChess(s.x, s.y);
+        }
+
+        InvalidateRect(hWnd, NULL, false);
+        UpdateWindow(hWnd);
+        DoEvents();
+        Sleep(500);
+        DoEvents();
+
+        if (!ChessColor && black == 0)return;
+        if (ChessColor && white == 0)return;
+    }
+
+}
+
+
 VOID OnPaint(HDC hdc, HWND hWnd)
 {
+    
     //Graphics graphics(hdc);
     //双缓冲
     HBITMAP hBackbuffer = CreateCompatibleBitmap(hdc, WindowWidth, WindowWidth);
@@ -68,9 +143,9 @@ VOID OnPaint(HDC hdc, HWND hWnd)
     graphics.SetSmoothingMode(Gdiplus::SmoothingModeHighQuality);
     Pen pen(Color(255, 0, 0, 255));
 
-    int Scale = (WindowWidth - SideWidth - SideWidth) / PanelSize;
+    int Scale = (WindowWidth - SideWidth - SideWidth) / GridSize;
     //画棋盘。。
-    for (int i = 0; i <= PanelSize; i++)
+    for (int i = 0; i <= GridSize; i++)
     {
         int Point = SideWidth + Scale * i;
         graphics.DrawLine(&pen, Point, SideWidth, Point, WindowWidth - SideWidth - 3);//-3是为了消除小数误差
@@ -81,7 +156,7 @@ VOID OnPaint(HDC hdc, HWND hWnd)
         //画坐标轴标记
         if (ShowTag)
         {
-            if (i + 1 > PanelSize) continue;
+            if (i + 1 > GridSize) continue;
             WCHAR  t[4];
             FontFamily  fontFamily(L"Consolas");
             Font font(&fontFamily, 24, FontStyleRegular, UnitPixel);
@@ -152,10 +227,16 @@ VOID OnPaint(HDC hdc, HWND hWnd)
 
 VOID init()
 {
-    PanelSize = ReadINI("PanelSize", 15);
+    GridSize = ReadINI("GridSize", 15);
     ShowNum= ReadINI("ShowNum", 1);
     ShowTag= ReadINI("ShowTag", 1);
     WindowWidth = ReadINI("WindowWidth", 768);
+    black = ReadINI("black",0);
+    white = ReadINI("white", 0);
+
+    //得到在当前窗体大小下，每个格子的宽度，这个宽度是动态的
+    int Scale = (WindowWidth - SideWidth - SideWidth) / GridSize;
+    ChessSize = Scale - 12;
 }
 
 
@@ -164,7 +245,7 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, INT iCmdShow)//不用管，Main
 {
-    HWND                hWnd;
+
     MSG                 msg;
     WNDCLASS            wndClass;
     GdiplusStartupInput gdiplusStartupInput;
@@ -202,14 +283,20 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, INT iCmdShow)//不用�
         hInstance,                // program instance handle
         NULL);                    // creation parameters
 
+    //开始下棋
+
     ShowWindow(hWnd, iCmdShow);
     UpdateWindow(hWnd);
+
+    ProcChess();
 
     while (GetMessage(&msg, NULL, 0, 0))
     {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
+
+
 
     GdiplusShutdown(gdiplusToken);
     return msg.wParam;
@@ -234,10 +321,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message,
     case WM_LBUTTONDOWN:
         xPos = GET_X_LPARAM(lParam);
         yPos = GET_Y_LPARAM(lParam);
-        if (RecChess(xPos, yPos, hWnd))
+        if (!IsProc)
         {
-            InvalidateRect(hWnd, NULL, false);
-            //UpdateWindow(hWnd);
+            IsProc = true;
+            if(RecChess(xPos, yPos))
+            {
+                InvalidateRect(hWnd, NULL, false);
+                //UpdateWindow(hWnd);
+            }
+            IsProc = false;
+            //决定下一步
+            ProcChess();
         }
         //SetWindowTextW(hWnd, L"asdasdas");
         //MessageBox(hWnd, (LPCWSTR)L"落子", (LPCWSTR)L"提示", 0);

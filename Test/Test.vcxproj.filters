@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="源文件\AI">
+      <UniqueIdentifier>{6bab899d-c1c8-4876-9393-599c80c92f88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -33,6 +36,9 @@
     <ClInclude Include="IsWin.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="AI_Level_1.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Test.cpp">
@@ -43,6 +49,9 @@
     </ClCompile>
     <ClCompile Include="IsWin.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AI_Level_1.cpp">
+      <Filter>源文件\AI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

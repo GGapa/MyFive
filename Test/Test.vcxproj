@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AI_Level_1.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="IsWin.h" />
@@ -135,6 +136,7 @@
     <ClInclude Include="Test.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AI_Level_1.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="IsWin.cpp" />
     <ClCompile Include="Test.cpp" />

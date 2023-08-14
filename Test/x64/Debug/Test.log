@@ -1,7 +1,7 @@
 ﻿  Test.cpp
-C:\cpp\MyFive\Test\Test.cpp(89,33): warning C4244: 'argument': conversion from 'int' to 'Gdiplus::REAL', possible loss of data
-C:\cpp\MyFive\Test\Test.cpp(92,37): warning C4244: 'argument': conversion from 'int' to 'Gdiplus::REAL', possible loss of data
-C:\cpp\MyFive\Test\Test.cpp(117,52): warning C4244: 'argument': conversion from 'int' to 'Gdiplus::REAL', possible loss of data
-C:\cpp\MyFive\Test\Test.cpp(117,30): warning C4244: 'argument': conversion from 'int' to 'Gdiplus::REAL', possible loss of data
-C:\cpp\MyFive\Test\Test.cpp(215,15): warning C4244: 'return': conversion from 'WPARAM' to 'int', possible loss of data
+C:\cpp\MyFive\Test\Test.cpp(164,33): warning C4244: 'argument': conversion from 'int' to 'Gdiplus::REAL', possible loss of data
+C:\cpp\MyFive\Test\Test.cpp(167,37): warning C4244: 'argument': conversion from 'int' to 'Gdiplus::REAL', possible loss of data
+C:\cpp\MyFive\Test\Test.cpp(192,52): warning C4244: 'argument': conversion from 'int' to 'Gdiplus::REAL', possible loss of data
+C:\cpp\MyFive\Test\Test.cpp(192,30): warning C4244: 'argument': conversion from 'int' to 'Gdiplus::REAL', possible loss of data
+C:\cpp\MyFive\Test\Test.cpp(302,15): warning C4244: 'return': conversion from 'WPARAM' to 'int', possible loss of data
   Test.vcxproj -> C:\cpp\MyFive\x64\Debug\Test.exe
