@@ -16,10 +16,12 @@ int WindowWidth =768; //窗口大小
 int SideWidth = 30; //棋盘边框与窗体距离
 bool ShowNum = true; //是否在棋子上显示步数
 bool ShowTag = true; //是否在棋盘上显示坐标标记
+bool ShowRank = true;//是否在棋盘上显示权重
 int xPos, yPos;
-bool ChessColor = false;
-int ChessSize = 35;
+bool ChessColor = false; //false=黑棋 ，true=白棋
+int ChessSize = 35; //棋子默认尺寸
 byte Data[100][100] = { 0 };
+int GridRank[100][100] = { 0 };
 bool IsOver = false; //棋局是否结束
 bool IsProc = false; //是否正在后台处理数据
 int black = 0, white = 0;
@@ -28,6 +30,7 @@ HWND hWnd;
 
 void DoEvents()
 {
+    //return;
     MSG msg;
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
     {
@@ -197,6 +200,25 @@ VOID OnPaint(HDC hdc, HWND hWnd)
         }
     }
 
+    //画权重
+    for(int i =0 ;i<GridSize;i++)
+        for (int j= 0;j < GridSize;j++)
+        {
+            if (Data[i][j] != 0) continue;
+            int xP = i * Scale + SideWidth + 6;
+            int yP = j* Scale + SideWidth + 6;
+            WCHAR  t[40];
+            Color c= Color(255, 128, 128, 128);
+            FontFamily  fontFamily(L"Consolas");
+            Font font(&fontFamily, 12, FontStyleRegular, UnitPixel);
+            wsprintfW(t, L"%d", GridRank[i][j]);
+            PointF pointF(xP + (i < 9 ? 7 : 2), yP + 3);
+            
+            SolidBrush brush1(c);
+            graphics.DrawString(t, -1, &font, pointF, &brush1);
+
+        }
+
     /*
     for(int i=0;i< PanelWidth;i++)
         for (int j = 0; j < PanelWidth; j++)
@@ -233,6 +255,7 @@ VOID init()
     WindowWidth = ReadINI("WindowWidth", 768);
     black = ReadINI("black",0);
     white = ReadINI("white", 0);
+    ShowRank = ReadINI("ShowRank", 1);
 
     //得到在当前窗体大小下，每个格子的宽度，这个宽度是动态的
     int Scale = (WindowWidth - SideWidth - SideWidth) / GridSize;
@@ -289,11 +312,14 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, PSTR, INT iCmdShow)//不用�
     UpdateWindow(hWnd);
 
     ProcChess();
-
+    
     while (GetMessage(&msg, NULL, 0, 0))
+    //while (PeekMessage( & msg, hWnd, 0, 0, PM_REMOVE))
     {
+        //if (IsOver) return 0;
         TranslateMessage(&msg);
         DispatchMessage(&msg);
+ 
     }
 
 
@@ -316,6 +342,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message,
         EndPaint(hWnd, &ps);
         return 0;
     case WM_DESTROY:
+        IsOver = true;
         PostQuitMessage(0);
         return 0;
     case WM_LBUTTONDOWN:

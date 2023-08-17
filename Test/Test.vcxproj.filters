@@ -39,6 +39,9 @@
     <ClInclude Include="AI_Level_1.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="AI_Level_2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Test.cpp">
@@ -51,6 +54,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="AI_Level_1.cpp">
+      <Filter>源文件\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="AI_Level_2.cpp">
       <Filter>源文件\AI</Filter>
     </ClCompile>
   </ItemGroup>
